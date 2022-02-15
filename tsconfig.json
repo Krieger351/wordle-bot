@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "target": "esnext",
+    "strict": true,
+    "moduleResolution": "node"
+  },
+  "include": ["src/**/*", "./**.*s"],
+  "exclude": ["node_modules", "**/*.spec.ts"]
+}
