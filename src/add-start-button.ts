@@ -9,6 +9,5 @@ const buildButton = (startBot: () => void): HTMLButtonElement => {
 };
 
 export const addStartButton = (startBot: () => void): void => {
-  console.log("Adding Controls!");
   document.body.append(buildButton(startBot));
 };

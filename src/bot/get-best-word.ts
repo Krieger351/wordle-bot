@@ -15,9 +15,5 @@ export const getBestWord = async (words: string[]): Promise<string> => {
       bestWord = word;
     }
   }
-
-  console.log(bestWord, wordCount[bestWord]);
-  console.log("arose", wordCount["arose"]);
-
   return bestWord;
 };

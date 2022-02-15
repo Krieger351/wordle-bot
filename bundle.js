@@ -10,7 +10,6 @@ const buildButton = (startBot) => {
   return button;
 };
 const addStartButton = (startBot) => {
-  console.log("Adding Controls!");
   document.body.append(buildButton(startBot));
 };
 
@@ -118,7 +117,6 @@ const calculatePresent = (letterState) => {
   const letters = {};
   for (const row of letterState) {
     const rowInfo = getLetterCountPerRow(row);
-    console.log(rowInfo);
     for (const letter in rowInfo) {
       if (rowInfo[letter] > 0 && !letters[letter] || rowInfo[letter] > letters[letter]) {
         letters[letter] = rowInfo[letter];
@@ -206,17 +204,12 @@ const getBestWord = async (words) => {
       bestWord = word;
     }
   }
-  console.log(bestWord, wordCount[bestWord]);
-  console.log("arose", wordCount["arose"]);
   return bestWord;
 };
 
 const start = async () => {
   const currentWords = await filterWords();
-  console.log(currentWords);
-  console.log(currentWords.includes("cynic"));
   const bestWord = await getBestWord(currentWords);
-  console.log(bestWord);
   writeWord(bestWord);
 };
 

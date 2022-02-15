@@ -41,7 +41,6 @@ export const calculatePresent = (
   const letters: Partial<Record<Letter, number>> = {};
   for (const row of letterState) {
     const rowInfo = getLetterCountPerRow(row);
-    console.log(rowInfo);
     for (const letter in rowInfo) {
       if (
         ((rowInfo[letter as Letter] as number) > 0 &&

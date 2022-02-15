@@ -5,10 +5,7 @@ import { getBestWord } from "./get-best-word";
 
 export const start = async (): Promise<void> => {
   const currentWords = await filterWords();
-  console.log(currentWords);
-  console.log(currentWords.includes("cynic"));
   const bestWord = await getBestWord(currentWords);
-  console.log(bestWord);
   writeWord(bestWord);
   // await submit();
 };
