@@ -10,7 +10,7 @@ JS Script for solving wordle
 ## Adding the bookmarklet
 ### Drag & Drop
 Drag and drop the following link to your bookmarks bar.
-<a href="javascript%3A%28async%20%28%29%20%3D%3E%20%7B%0A%20%20%20%20if%20%28document.getElementById%28%22wordle-bot-script%22%29%29%20%7B%0A%20%20%20%20%20%20%20%20return%3B%0A%20%20%20%20%7D%0A%20%20%20%20const%20script%20%3D%20document.createElement%28%22script%22%29%3B%0A%20%20%20%20script.src%20%3D%20%22https%3A%2F%2Fkrieger351.github.io%2Fwordle-bot%2Fbundle.js%22%3B%0A%20%20%20%20script.id%20%3D%20%22wordle-bot-script%22%3B%0A%20%20%20%20document.body.append%28script%29%3B%0A%7D%29%28%29">Wordle Bot</a>
+<a href="javascript:%28async%20%28%29%20%3D%3E%20%7B%0A%20%20%20%20if%20%28document.getElementById%28%22wordle-bot-script%22%29%29%20%7B%0A%20%20%20%20%20%20%20%20return%3B%0A%20%20%20%20%7D%0A%20%20%20%20const%20script%20%3D%20document.createElement%28%22script%22%29%3B%0A%20%20%20%20script.src%20%3D%20%22https%3A%2F%2Fkrieger351.github.io%2Fwordle-bot%2Fbundle.js%22%3B%0A%20%20%20%20script.id%20%3D%20%22wordle-bot-script%22%3B%0A%20%20%20%20document.body.append%28script%29%3B%0A%7D%29%28%29">Wordle Bot</a>
 
 ### DIY Bookmarklet
 If you would like to create your own Bookmarklet, you can use the following javascript.
