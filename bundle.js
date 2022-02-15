@@ -70,7 +70,7 @@ const getLetterState = () => {
   return state;
 };
 
-const calculateFallback = (letterState) => {
+const calculateAbsent = (letterState) => {
   const excluded = /* @__PURE__ */ new Set();
   for (const row of letterState) {
     const rowInfo = {};
@@ -85,7 +85,36 @@ const calculateFallback = (letterState) => {
       }
     }
   }
-  return `[^${[...excluded].join("")}]`;
+  return [...excluded].join("");
+};
+const calculatePresentExclusion = (letterState) => {
+  const presentExlcusion = [
+    "",
+    "",
+    "",
+    "",
+    ""
+  ];
+  for (let index = 0; index < 5; index++) {
+    const letters = [];
+    for (const row of letterState) {
+      const { letter, evaluation } = row[index];
+      if (evaluation === "present") {
+        letters.push(letter);
+      }
+    }
+    presentExlcusion[index] = letters.join("");
+  }
+  return presentExlcusion;
+};
+const calculateFallback = (letterState) => {
+  const fallback = [];
+  const absent = calculateAbsent(letterState);
+  const presentExlcusion = calculatePresentExclusion(letterState);
+  for (let index = 0; index < 5; index++) {
+    fallback[index] = `[^${absent}${presentExlcusion[index]}]`;
+  }
+  return [fallback[0], fallback[1], fallback[2], fallback[3], fallback[4]];
 };
 
 const getLetterCountPerRow = (row) => {
@@ -143,7 +172,7 @@ const filter = () => {
   const correct = getCorrectLetters(letterState);
   const fallback = calculateFallback(letterState);
   const present = calculatePresent(letterState);
-  const regex = new RegExp(correct.map((letter) => letter || fallback).join(""));
+  const regex = new RegExp(correct.map((letter, index) => letter || fallback[index]).join(""));
   return (text) => regex.test(text) && present(text);
 };
 

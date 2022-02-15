@@ -10,7 +10,7 @@ export const filter = (): ((text: string) => boolean) => {
   const fallback = calculateFallback(letterState);
   const present = calculatePresent(letterState);
   const regex = new RegExp(
-    correct.map((letter) => letter || fallback).join("")
+    correct.map((letter, index) => letter || fallback[index]).join("")
   );
 
   return (text: string): boolean => regex.test(text) && present(text);
