@@ -1,34 +1,65 @@
 import type {
+  Evaluation,
   LetterState,
   TileState,
 } from "../../game-interface/get-letter-state";
 import type { Letter } from "../../types";
 
-const getLetterCountPerRow = (row: TileState[]) => {
-  const rowInfo: Partial<Record<Letter, number>> = {};
+const groupRowByLetter = (
+  row: TileState[]
+): Partial<Record<Letter, Partial<Record<Evaluation, number>>>> => {
+  const rowByLetter: Partial<
+    Record<Letter, Partial<Record<Evaluation, number>>>
+  > = {};
   for (const { letter, evaluation } of row) {
     if (letter && evaluation) {
-      if (!rowInfo[letter]) {
-        rowInfo[letter] = 0;
-      }
-      if (/^(present|correct)$/.test(evaluation)) {
-        (rowInfo[letter] as number)++;
+      rowByLetter[letter as Letter] = {
+        ...rowByLetter[letter],
+        [evaluation]: (rowByLetter[letter as Letter]?.[evaluation] ?? 0) + 1,
+      };
+    }
+  }
+  return rowByLetter;
+};
+
+type LetterUsage = {
+  excessLetters: Partial<Record<Letter, number>>;
+  presentLetters: Partial<Record<Letter, number>>;
+};
+
+const getLetterUsage = (rows: TileState[][]): LetterUsage => {
+  const excessLetters: Partial<Record<Letter, number>> = {};
+  const presentLetters: Partial<Record<Letter, number>> = {};
+  for (const row of rows) {
+    const rowByLetter = groupRowByLetter(row);
+    for (const letter in rowByLetter) {
+      const {
+        absent = 0,
+        present = 0,
+        correct = 0,
+      } = rowByLetter[letter as Letter] as Partial<Record<Evaluation, number>>;
+      if (correct > 0 || present > 0) {
+        if (absent > 0) {
+          excessLetters[letter as Letter] = correct + present;
+        } else {
+          presentLetters[letter as Letter] = correct + present;
+        }
       }
     }
   }
-  return rowInfo;
+  return { excessLetters, presentLetters };
 };
 
 const buildFilter =
-  (letters: Partial<Record<Letter, number>>) => (word: string) => {
-    for (const letter in letters) {
-      if (!word.includes(letter)) {
+  ({ excessLetters, presentLetters }: LetterUsage) =>
+  (word: string) => {
+    for (const [letter, count] of Object.entries(excessLetters)) {
+      if (word.split(letter).length - 1 !== count) {
         return false;
       }
-      if (
-        word.split(letter).length - 1 <
-        (letters[letter as Letter] as number)
-      ) {
+    }
+    for (const [letter, count] of Object.entries(presentLetters)) {
+      if (word.split(letter).length - 1 < count) {
         return false;
       }
     }
@@ -37,21 +68,4 @@ const buildFilter =
 
 export const calculatePresent = (
   letterState: LetterState
-): ((word: string) => boolean) => {
-  const letters: Partial<Record<Letter, number>> = {};
-  for (const row of letterState) {
-    const rowInfo = getLetterCountPerRow(row);
-    for (const letter in rowInfo) {
-      if (
-        ((rowInfo[letter as Letter] as number) > 0 &&
-          !letters[letter as Letter]) ||
-        (rowInfo[letter as Letter] as number) >
-          (letters[letter as Letter] as number)
-      ) {
-        letters[letter as Letter] = rowInfo[letter as Letter] as number;
-      }
-    }
-  }
-
-  return buildFilter(letters);
-};
+): ((word: string) => boolean) => buildFilter(getLetterUsage(letterState));

@@ -117,43 +117,54 @@ const calculateFallback = (letterState) => {
   return [fallback[0], fallback[1], fallback[2], fallback[3], fallback[4]];
 };
 
-const getLetterCountPerRow = (row) => {
-  const rowInfo = {};
+const groupRowByLetter = (row) => {
+  const rowByLetter = {};
   for (const { letter, evaluation } of row) {
     if (letter && evaluation) {
-      if (!rowInfo[letter]) {
-        rowInfo[letter] = 0;
-      }
-      if (/^(present|correct)$/.test(evaluation)) {
-        rowInfo[letter]++;
+      rowByLetter[letter] = {
+        ...rowByLetter[letter],
+        [evaluation]: (rowByLetter[letter]?.[evaluation] ?? 0) + 1
+      };
+    }
+  }
+  return rowByLetter;
+};
+const getLetterUsage = (rows) => {
+  const excessLetters = {};
+  const presentLetters = {};
+  for (const row of rows) {
+    const rowByLetter = groupRowByLetter(row);
+    for (const letter in rowByLetter) {
+      const {
+        absent = 0,
+        present = 0,
+        correct = 0
+      } = rowByLetter[letter];
+      if (correct > 0 || present > 0) {
+        if (absent > 0) {
+          excessLetters[letter] = correct + present;
+        } else {
+          presentLetters[letter] = correct + present;
+        }
       }
     }
   }
-  return rowInfo;
+  return { excessLetters, presentLetters };
 };
-const buildFilter = (letters) => (word) => {
-  for (const letter in letters) {
-    if (!word.includes(letter)) {
+const buildFilter = ({ excessLetters, presentLetters }) => (word) => {
+  for (const [letter, count] of Object.entries(excessLetters)) {
+    if (word.split(letter).length - 1 !== count) {
       return false;
     }
-    if (word.split(letter).length - 1 < letters[letter]) {
+  }
+  for (const [letter, count] of Object.entries(presentLetters)) {
+    if (word.split(letter).length - 1 < count) {
       return false;
     }
   }
   return true;
 };
-const calculatePresent = (letterState) => {
-  const letters = {};
-  for (const row of letterState) {
-    const rowInfo = getLetterCountPerRow(row);
-    for (const letter in rowInfo) {
-      if (rowInfo[letter] > 0 && !letters[letter] || rowInfo[letter] > letters[letter]) {
-        letters[letter] = rowInfo[letter];
-      }
-    }
-  }
-  return buildFilter(letters);
-};
+const calculatePresent = (letterState) => buildFilter(getLetterUsage(letterState));
 
 const getCorrectLetters = (letterState) => {
   const correct = [void 0, void 0, void 0, void 0, void 0];
@@ -219,7 +230,7 @@ const countLetterUsage = (words) => {
   return accumulator;
 };
 
-const getBestWord = async (words) => {
+const getBestWord = (words) => {
   const letterUsage = countLetterUsage(words);
   let [bestWord] = words;
   const wordCount = {};
@@ -238,7 +249,9 @@ const getBestWord = async (words) => {
 
 const start = async () => {
   const currentWords = await filterWords();
-  const bestWord = await getBestWord(currentWords);
+  console.log("Remaining Words:", currentWords.length);
+  console.log("Words:", currentWords);
+  const bestWord = getBestWord(currentWords);
   writeWord(bestWord);
 };
 

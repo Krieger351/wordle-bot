@@ -1,7 +1,7 @@
 import { countLetterUsage } from "./count-letter-usage";
 import type { Letter } from "../types";
 
-export const getBestWord = async (words: string[]): Promise<string> => {
+export const getBestWord = (words: string[]): string => {
   const letterUsage = countLetterUsage(words);
   let [bestWord] = words;
   const wordCount: Record<string, number> = {};

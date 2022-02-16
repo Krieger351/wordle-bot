@@ -5,14 +5,12 @@ export default {
   output: {
     file: "bundle.js",
     format: "cjs",
+    sourceMap: "inline",
   },
   plugins: [
     esbuild({
-      sourceMap: true, // by default inferred from rollup's `output.sourcemap` option
-      target: "esnext", // default, or 'es20XX', 'esnext'
-      loaders: {
-        ".json": "json",
-      },
+      // minify: true,
+      target: "esnext",
     }),
   ],
 };

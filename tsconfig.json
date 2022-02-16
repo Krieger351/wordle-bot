@@ -2,7 +2,10 @@
   "compilerOptions": {
     "target": "esnext",
     "strict": true,
-    "moduleResolution": "node"
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true
   },
   "include": ["src/**/*", "./**.*s"],
   "exclude": ["node_modules", "**/*.spec.ts"]
